@@ -91,7 +91,7 @@ int main() {
     stock.n_spaceships = 0;
     stock.spaceship = NULL;
 
-    stock = readSpaceship(stock);
+    // stock = readSpaceship(stock);
     dataSpaceship = readSpaceshipsData(&stock);
 
     do {
@@ -100,8 +100,6 @@ int main() {
         scanf("%c", &aux);
         executeMainMenu(option, &dataUsers, &dataSpaceship, stock);
     }while(option != 3);
-
-
 
     saveUsers(dataUsers);
     saveSpaceship(dataSpaceship);
