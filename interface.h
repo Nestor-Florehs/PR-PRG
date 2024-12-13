@@ -5,7 +5,7 @@
 #include "project.h"
 #include "spaceship.h"
 
-DataUsers executeAdminMenu(int choice, DataUsers d, DataSpaceship ds, DataSpaceship stock, String mail);
+void executeAdminMenu(int choice, DataUsers* d, DataSpaceship* ds, DataSpaceship stock, String mail);
 
 void showAdminMenu();
 

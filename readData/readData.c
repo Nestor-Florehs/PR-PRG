@@ -175,7 +175,7 @@ DataSpaceship readSpaceshipsData(DataSpaceship* stock) {
 }
 
 void saveSpaceship(DataSpaceship ds) {
-    FILE* f = fopen("C:\\Documentos\\ingenieria informatica\\Segundo_carrera\\Pr Proj\\prpr\\textFiles\\space.txt", "w");
+    FILE* f = fopen("C:\\Documentos\\ingenieria informatica\\Segundo_carrera\\Pr Proj\\prpr\\textFiles\\Spaceships.txt", "w");
     if(f == NULL){
         printf("error opening file");
     }else{
