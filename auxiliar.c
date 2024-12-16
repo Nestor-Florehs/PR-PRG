@@ -79,4 +79,3 @@ int checkHashtag(String str){
         }
     }
     return error;
-}
