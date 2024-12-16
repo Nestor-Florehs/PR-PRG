@@ -19,18 +19,25 @@ void showMainMenu() {
 
 
 //DONE
-void executeMainMenu(int option, DataUsers* dataUsers, DataSpaceship* ds, DataSpaceship stock) {
+DataUsers executeMainMenu(int option, DataUsers dataUsers) {
     int userIndex;
     DataProjects dp;
-
+    DataSpaceship ds;
+    DataSpaceship stock;
+    stock.n_spaceships = 0;
+    stock.spaceship = NULL;
     int projectOption = 0;
+    ds.n_spaceships = 0;
+    ds.spaceship = NULL;
     String optionAdmin;
 
+    // stock = readSpaceship(stock);
+    ds = readSpaceshipsData(&stock);
 
     switch(option) {
         case 1:
-            userIndex = logIn(*dataUsers);
-            User user = dataUsers->user[userIndex];
+            userIndex = logIn(dataUsers);
+            User user = dataUsers.user[userIndex];
             printf("%s\n", user.email);
             //DONE ADMIN
             if (user.rol == 'A') {
@@ -40,7 +47,7 @@ void executeMainMenu(int option, DataUsers* dataUsers, DataSpaceship* ds, DataSp
                     printf("%s\n", optionAdmin);
                     projectOption = checkInt(optionAdmin);
                     if(projectOption != -1) {
-                        executeAdminMenu(projectOption, dataUsers, ds, stock, user.email);
+                        dataUsers = executeAdminMenu(projectOption, dataUsers, ds, stock, user.email);
                     }else {
                         printf("Please enter a valid option!");
                     }
@@ -56,7 +63,7 @@ void executeMainMenu(int option, DataUsers* dataUsers, DataSpaceship* ds, DataSp
                     askForString(optionAdmin, "Choose an option: ");
                     projectOption = checkInt(optionAdmin);
                     if(projectOption != -1) {
-                        executeInvestigatorMenu(projectOption, *dataUsers, dp, userIndex);
+                        executeInvestigatorMenu(projectOption, dataUsers, dp, userIndex);
                     }else {
                         printf("Please enter a valid option!");
                     }
@@ -67,7 +74,7 @@ void executeMainMenu(int option, DataUsers* dataUsers, DataSpaceship* ds, DataSp
 
             break;
         case 2:
-            registerUser(*dataUsers);
+            dataUsers = registerUser(dataUsers);
             break;
         case 3:
             printf("Exiting\n");
@@ -77,32 +84,22 @@ void executeMainMenu(int option, DataUsers* dataUsers, DataSpaceship* ds, DataSp
             printf("Invalid option\n");
             break;
     }
+    return dataUsers;
 }
 
 int main() {
     int option = 0;
     char aux;
     DataUsers dataUsers = readUsersData();
-    DataSpaceship dataSpaceship;
-    dataSpaceship.n_spaceships = 0;
-    dataSpaceship.spaceship = NULL;
-
-    DataSpaceship stock;
-    stock.n_spaceships = 0;
-    stock.spaceship = NULL;
-
-    // stock = readSpaceship(stock);
-    dataSpaceship = readSpaceshipsData(&stock);
 
     do {
         showMainMenu();
         scanf("%d", &option);
         scanf("%c", &aux);
-        executeMainMenu(option, &dataUsers, &dataSpaceship, stock);
+        dataUsers = executeMainMenu(option, dataUsers);
     }while(option != 3);
 
     saveUsers(dataUsers);
-    saveSpaceship(dataSpaceship);
 
     return 0;
 }

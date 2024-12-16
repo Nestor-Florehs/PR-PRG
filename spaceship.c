@@ -113,7 +113,7 @@ Spaceship readString(String str) {
 DataSpaceship readSpaceship() {
     DataSpaceship data;
 
-    FILE *file = fopen("C:\\Documentos\\ingenieria informatica\\Segundo_carrera\\Pr Proj\\prpr\\textFiles\\space.txt", "r");
+    FILE *file = fopen("textFiles/space.txt", "r");
 
     if (file == NULL) {
         printf("Error opening file\n");
