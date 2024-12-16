@@ -201,19 +201,19 @@ DataUsers runManageResearcher(DataUsers data_users) {
     return data_users;
 }
 
-void executeAdminMenu(int choice, DataUsers* d, DataSpaceship* ds, DataSpaceship stock, String mail) {
+DataUsers executeAdminMenu(int choice, DataUsers d, DataSpaceship ds, DataSpaceship stock, String mail) {
     int projectOption = 0;
     DataProjects dp;
     String option;
     switch (choice) {
         case 1:
-            *d = runManageClient(*d);
+            d = runManageClient(d);
             break;
         case 2:
-            *d = runManageResearcher(*d);
+            d = runManageResearcher(d);
             break;
         case 3:
-            *ds = runManageSpaceship(*ds, &stock, mail);
+            ds = runManageSpaceship(ds, &stock, mail);
             break;
         case 4:
             printf("Manage Crew\n");
@@ -225,7 +225,7 @@ void executeAdminMenu(int choice, DataUsers* d, DataSpaceship* ds, DataSpaceship
                 projectOption = checkInt(option);
                 if(projectOption != -1) {
                     dp = readProjectsData();
-                    *d = executeAdminProjectsMenu(projectOption, *d, dp);
+                    d = executeAdminProjectsMenu(projectOption, d, dp);
                 }else {
                     printf("Please enter a valid option!");
                 }
@@ -240,6 +240,7 @@ void executeAdminMenu(int choice, DataUsers* d, DataSpaceship* ds, DataSpaceship
             printf("Invalid Choice\n");
     }
 
+    return d;
 }
 
 void showInvestigatorMenu() {
