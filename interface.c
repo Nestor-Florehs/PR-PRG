@@ -3,6 +3,7 @@
 #include "user.h"
 #include "readData/readData.h"
 #include "auxiliar.h"
+#include "crew.h"
 #include "spaceship.h"
 
 
@@ -201,7 +202,7 @@ DataUsers runManageResearcher(DataUsers data_users) {
     return data_users;
 }
 
-void executeAdminMenu(int choice, DataUsers* d, DataSpaceship* ds, DataSpaceship stock, String mail) {
+void executeAdminMenu(int choice, DataUsers* d, DataSpaceship* ds, Crew_data* dc, DataSpaceship stock, String mail) {
     int projectOption = 0;
     DataProjects dp;
     String option;
@@ -216,7 +217,7 @@ void executeAdminMenu(int choice, DataUsers* d, DataSpaceship* ds, DataSpaceship
             *ds = runManageSpaceship(*ds, &stock, mail);
             break;
         case 4:
-            printf("Manage Crew\n");
+            *dc = menuCrew(*dc, *ds);
             break;
         case 5:
             do {

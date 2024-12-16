@@ -6,7 +6,7 @@
 #include "interface.h"
 #include "project.h"
 #include "spaceship.h"
-#include "readData/readData.h"
+#include "crew.h"
 
 
 void showMainMenu() {
@@ -19,7 +19,7 @@ void showMainMenu() {
 
 
 //DONE
-void executeMainMenu(int option, DataUsers* dataUsers, DataSpaceship* ds, DataSpaceship stock) {
+void executeMainMenu(int option, DataUsers* dataUsers, DataSpaceship* ds, Crew_data* dc, DataSpaceship stock) {
     int userIndex;
     DataProjects dp;
 
@@ -40,7 +40,7 @@ void executeMainMenu(int option, DataUsers* dataUsers, DataSpaceship* ds, DataSp
                     printf("%s\n", optionAdmin);
                     projectOption = checkInt(optionAdmin);
                     if(projectOption != -1) {
-                        executeAdminMenu(projectOption, dataUsers, ds, stock, user.email);
+                        executeAdminMenu(projectOption, dataUsers, ds, dc, stock, user.email);
                     }else {
                         printf("Please enter a valid option!");
                     }
@@ -91,6 +91,11 @@ int main() {
     stock.n_spaceships = 0;
     stock.spaceship = NULL;
 
+    Crew_data dataCrew;
+    dataCrew.n_crew = 0;
+    dataCrew.crew = NULL;
+    dataCrew = readCrewData();
+
     // stock = readSpaceship(stock);
     dataSpaceship = readSpaceshipsData(&stock);
 
@@ -98,11 +103,12 @@ int main() {
         showMainMenu();
         scanf("%d", &option);
         scanf("%c", &aux);
-        executeMainMenu(option, &dataUsers, &dataSpaceship, stock);
+        executeMainMenu(option, &dataUsers, &dataSpaceship, &dataCrew, stock);
     }while(option != 3);
 
     saveUsers(dataUsers);
     saveSpaceship(dataSpaceship);
+    saveCrew(dataCrew);
 
     return 0;
 }

@@ -4,8 +4,9 @@
 #include "user.h"
 #include "project.h"
 #include "spaceship.h"
+#include "crew.h"
 
-void executeAdminMenu(int choice, DataUsers* d, DataSpaceship* ds, DataSpaceship stock, String mail);
+void executeAdminMenu(int choice, DataUsers* d, DataSpaceship* ds, Crew_data* dc, DataSpaceship stock, String mail);
 
 void showAdminMenu();
 

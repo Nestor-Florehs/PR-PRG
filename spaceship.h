@@ -22,6 +22,7 @@ typedef struct {
     int broken_pieces;
     int launch;
     int indexVoyage;
+    int actual_n_crew;
 } Spaceship;
 
 typedef struct {
@@ -32,6 +33,8 @@ typedef struct {
 DataSpaceship buySpaceship(DataSpaceship d, DataSpaceship* stock, String email);
 
 DataSpaceship readSpaceship();
+
+void printSpaceship(DataSpaceship data, int i);
 
 DataSpaceship removeSpaceship (DataSpaceship data);
 

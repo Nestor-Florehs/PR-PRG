@@ -37,6 +37,8 @@ void printSpaceship(DataSpaceship data, int i) {
     printf("Instrumentation: %s\n", data.spaceship[i].instrumentation);
     printf("Modules: %d\n", data.spaceship[i].module);
     printf("Pieces broken: %d\n", data.spaceship[i].broken_pieces);
+    printf("Pieces broken: %d\n", data.spaceship[i].broken_pieces);
+    printf("Number of crew assigned: %d\n", data.spaceship[i].actual_n_crew);
     printf("\n");
 }
 
@@ -268,6 +270,7 @@ DataSpaceship buySpaceship(DataSpaceship d, DataSpaceship* stock, String email) 
             new.broken_motor = 0;
             new.broken_pieces = 0;
             new.launch = 0;
+            new.actual_n_crew = 0;
             addSpaceship(&d, new);
             break;
         default:

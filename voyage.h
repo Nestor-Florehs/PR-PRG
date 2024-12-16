@@ -72,5 +72,4 @@ int isDateBeforeOrEqual(Date date1, Date date2);
 int isDateInRange(Date date, Date start_date, Date end_date);
 VoyageData rateVoyage(VoyageData dv, DataUsers du, int idx_user, Date actualDate);
 
-
 #endif// VOYAGE_H
