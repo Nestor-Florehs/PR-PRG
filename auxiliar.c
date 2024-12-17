@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include "voyage.h"
 
 void deleteLinespace(char *line) {
     line[strlen(line)-1] = '\0';
@@ -24,13 +25,11 @@ void askForString(String str, char* message) {
 }
 
 void askForLongString(LongString str, char* message) {
-    int error;
-    fgets(str, 1000, stdin);
-    str[strlen(str)-1] = '\0';
+    int error = 1;
 
     while (error) {
         printf("%s", message);
-        fgets(str, 100, stdin);
+        fgets(str, 1000, stdin);
         str[strlen(str)-1] = '\0';
         error = checkHashtag(str);
         if (error) {
@@ -80,3 +79,5 @@ int checkHashtag(String str){
     }
     return error;
 }
+
+

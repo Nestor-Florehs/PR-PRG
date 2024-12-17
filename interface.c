@@ -3,7 +3,9 @@
 #include "user.h"
 #include "readData/readData.h"
 #include "auxiliar.h"
+#include "crew.h"
 #include "spaceship.h"
+#include "voyage.h"
 
 
 void showAdminProjectsMenu() {
@@ -108,6 +110,7 @@ void showManageClientMenu() {
     printf("\t2. Modify client\n");
     printf("\t3. Delete client\n");
 
+
     printf("\t4. Exit\n");
 
     printf("Choose: ");
@@ -201,22 +204,22 @@ DataUsers runManageResearcher(DataUsers data_users) {
     return data_users;
 }
 
-DataUsers executeAdminMenu(int choice, DataUsers d, DataSpaceship ds, DataSpaceship stock, String mail) {
+void executeAdminMenu(int choice, DataUsers* d, DataSpaceship* ds, Crew_data* dc, DataSpaceship stock, String mail,VoyageData* voyage_data) {
     int projectOption = 0;
     DataProjects dp;
     String option;
     switch (choice) {
         case 1:
-            d = runManageClient(d);
+            *d = runManageClient(*d);
             break;
         case 2:
-            d = runManageResearcher(d);
+            *d = runManageResearcher(*d);
             break;
         case 3:
-            ds = runManageSpaceship(ds, &stock, mail);
+            *ds = runManageSpaceship(*ds, &stock, mail);
             break;
         case 4:
-            printf("Manage Crew\n");
+            *dc = menuCrew(*dc, *ds);
             break;
         case 5:
             do {
@@ -225,14 +228,15 @@ DataUsers executeAdminMenu(int choice, DataUsers d, DataSpaceship ds, DataSpaces
                 projectOption = checkInt(option);
                 if(projectOption != -1) {
                     dp = readProjectsData();
-                    d = executeAdminProjectsMenu(projectOption, d, dp);
+                    *d = executeAdminProjectsMenu(projectOption, *d, dp);
                 }else {
                     printf("Please enter a valid option!");
                 }
             }while(projectOption != 3);
             break;
         case 6:
-            printf("Create Travel\n");
+            *voyage_data = createVoyage(*voyage_data,stock);
+
             break;
         case 7:
             break;
@@ -240,7 +244,6 @@ DataUsers executeAdminMenu(int choice, DataUsers d, DataSpaceship ds, DataSpaces
             printf("Invalid Choice\n");
     }
 
-    return d;
 }
 
 void showInvestigatorMenu() {
@@ -272,15 +275,62 @@ void executeInvestigatorMenu(int choice, DataUsers du, DataProjects dp, int inde
             saveProject(dp);
             break;
         case 5:
-            // dp = postProject(dp);
+            dp = postProject(dp);
             saveProject(dp);
         case 6:
-            //dp = reviewProject(dp, indexUser, du);
+            dp = reviewProject(dp, indexUser, du);
             saveProject(dp);
             break;
         case 7:
-            exit(0);
+            printf("Exit\n");
+            break;
         default:
             printf("Invalid Choice\n");
+    }
+}
+
+void showClientMenu(DataUsers* data_users, VoyageData* voyage_data) {
+    printf("\nClient functions:");
+    printf("\n\t1. Modify user data\n");
+    printf("\t2. Delete account\n");
+    printf("\t3. List voyages by avaliability\n");
+    printf("\t4. Filter voyages\n");
+    printf("\t5. Buy ticket\n");
+    printf("\t6. Rate voyage\n");
+    printf("\t7. Cancel ticket\n");
+    printf("\t8. Exit\n");
+}
+
+void executeClientMenu(int option,DataUsers* data_users, VoyageData* voyage_data, DataSpaceship stock) {
+    VoyageData filtered_data;
+    FilterCriteria filter_criteria;
+    switch (option) {
+    case 1:
+
+        break;
+    case 2:
+        break;
+    case 3:
+        filtered_data=filterVoyagesBySeats(*voyage_data,0);
+        showVoyages(filtered_data);
+        break;
+    case 4:
+        filter_criteria = askFilterCritera();
+        filtered_data = filterVoyages(*voyage_data,filter_criteria);
+        showVoyages(filtered_data);
+        break;
+    case 5:
+        *voyage_data=buyTicket(*voyage_data);
+        break;
+    case 6:
+        //rateVoyage(*voyage_data,*data_users,1,date);
+        break;
+     case 7:
+         break;
+     case 8:
+         break;
+     default:
+         printf("Invalid Choice\n");
+        break;
     }
 }

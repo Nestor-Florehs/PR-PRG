@@ -13,13 +13,23 @@ typedef char String[100];
 
 typedef struct {
     int id;
+    int id_spaceship;
+} Id_Spaceship;
+
+typedef struct {
+    int n_spaceships;
+    Id_Spaceship* id_spaceship;
+} Id_spaceship;
+
+typedef struct {
+    int id;
     String name;
     int age;
     String rol;
     String uniform_color;
     String contact_info;
     int support;
-    Spaceship* spaceship;
+    Id_spaceship id_spaceship;
 } Crew;
 
 typedef struct {
@@ -27,10 +37,8 @@ typedef struct {
     Crew* crew;
 } Crew_data;
 
-Crew_data removeCrew(Crew_data data);
+Crew_data menuCrew(Crew_data data, DataSpaceship data_spaceship);
 
-Crew_data hireCrew(Crew_data data, int support_crew_member);
-
-void viewCrew(Crew_data data);
+Crew_data initializeCrewData(Crew_data data);
 
 #endif

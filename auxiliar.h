@@ -17,4 +17,5 @@ int checkHashtag(String str);
 
 void deleteLinespace(char* str);
 
+
 #endif

@@ -1,18 +1,35 @@
-#include "voyage.h"
 #include "user.h"
+#include "spaceship.h"
+#include "voyage.h"
+#include <stdio.h>
+
 #include "auxiliar.h"
 
-#include <time.h>
 
-struct tm dateToTm(Date date) {
-    struct tm tm_date = {0};  // Inicializa la estructura a ceros
-    tm_date.tm_mday = date.day;
-    tm_date.tm_mon = date.month - 1; // tm_mon empieza desde 0 (enero = 0)
-    tm_date.tm_year = date.year - 1900; // tm_year es desde 1900
-    tm_date.tm_hour = date.hour;
-    tm_date.tm_min = date.minutes;
+void showVoyages(VoyageData data){
+    printf("Voyages:\n");
+    for (int i = 0; i < data.num_voyages; i++) {
+        Voyage voyage = data.voyages[i];
 
-    return tm_date;
+        printf("Duration: %d", voyage.duration);
+        printf(" Price: %.2f", voyage.price);
+
+        printf(" Start: %s", voyage.start);
+
+        printf(" Itinerary: ");
+        for (int j = 0; j < voyage.itinerary_stops; j++) {
+            printf("%s", voyage.itinerary[j]);
+            if (j < voyage.itinerary_stops - 1) {
+                printf(" -> ");
+            }
+        }
+        printf(" End: %s", voyage.end);
+
+
+        printf(" Start date: %02d/%02d/%04d", voyage.startDate.day, voyage.startDate.month, voyage.startDate.year);
+        //printf("End date: %02d/%02d/%04d\n", voyage.endDate.day, voyage.endDate.month, voyage.endDate.year);
+        printf(" Spaceship name: %s\n", voyage.spaceship.name);
+    }
 }
 
 Date tmToDate(struct tm tm_date) {
@@ -55,19 +72,38 @@ int addVoyage(VoyageData* v, Voyage newVoyage){
     return error;
 }
 
+int findVoyageIndex(int id,VoyageData data) {
+    int index=0;
+    for (int i=0;i<data.num_voyages;i++) {
+        if (data.voyages[i].id==id) {
+            index = i;
+        }
+        return index;
+    }
+}
 
-void buyTicket(VoyageData data){
-    int i, id, option;
+int findSpaceshipIndex(int id,DataSpaceship data) {
+    int index=0;
+    for (int i=0;i<data.n_spaceships;i++) {
+        if (data.spaceship[i].id_spaceship==id) {
+            index = i;
+        }
+        return index;
+    }
+}
+
+VoyageData buyTicket(VoyageData data){
+    int i,id,option;
     String code;
-    VoyageData filteredData = filterVoyagesBySeats(data,1);
-    for(i=0;i < filteredData.num_voyages;i++){
+    VoyageData filteredData=filterVoyagesBySeats(data,1);
+    for(i=0;i<filteredData.num_voyages;i++){
         printf("Voyage %d: %s - %s\n",filteredData.voyages[i].id,filteredData.voyages[i].start,filteredData.voyages[i].end);
     }
     printf("Insert the id of the voyage you want to buy a ticket for: ");
     scanf("%d",&id);
     if(id>0 && id<=filteredData.num_voyages){
-        data.voyages[id-1].tickets=realloc(data.voyages[id-1].tickets,(data.voyages[id-1].num_tickets+1)*sizeof(Ticket));
-        data.voyages[id-1].tickets[data.voyages[id-1].num_tickets].id_voyage=id;
+        data.voyages[findVoyageIndex(id,data)].tickets=realloc(data.voyages[findVoyageIndex(id,data)].tickets,(data.voyages[findVoyageIndex(id,data)].num_tickets+1)*sizeof(Ticket));
+        data.voyages[findVoyageIndex(id,data)].tickets[data.voyages[findVoyageIndex(id,data)].num_tickets].id_voyage=id;
         printf("Select payment method:\n\t1.Bank transfer\n\t2.Visa\n\t3.Mastercard");
         scanf("%d",&option);
         switch (option)
@@ -91,14 +127,16 @@ void buyTicket(VoyageData data){
         }
         printf("Insert the id of the passenger you want to buy the ticket for: ");
         scanf("%s",&id);
-        data.voyages[id-1].tickets[data.voyages[id-1].num_tickets].id_passenger=id;
-        data.voyages[id-1].num_tickets++;
+        data.voyages[findVoyageIndex(id,data)].tickets[data.voyages[findVoyageIndex(id,data)].num_tickets].id_passenger=id;
+        data.voyages[findVoyageIndex(id,data)].num_tickets++;
         printf("Ticket bought successfully!\n");
 
     }else{
         printf("Error this voyage does not exist\n");
     }
+    return data;
 }
+
 
 // Función para comparar dos fechas (retorna true si date1 <= date2)
 int isDateBeforeOrEqual(Date date1, Date date2) {
@@ -211,7 +249,7 @@ VoyageData createVoyage(VoyageData data,DataSpaceship spaceships){
 
     Voyage new_voyage;
     char itinerary[400];
-    String spaceship,launch_date,arrival_date;
+    String spaceship,launch_date,arrival_date,aux;
     int error,i,index;
     int found=0;
 
@@ -238,6 +276,14 @@ VoyageData createVoyage(VoyageData data,DataSpaceship spaceships){
         printf("Where does the voyage end?\n");
         fgets(new_voyage.end,100,stdin);
         deleteLinespace(new_voyage.end);
+        printf("Imput the price: ");
+        fgets(aux,100,stdin);
+        deleteLinespace(aux);
+        new_voyage.price=atoi(aux);
+        printf("Insert duration: ");
+        fgets(aux,100,stdin);
+        deleteLinespace(aux);
+        new_voyage.duration=atoi(aux);
         printf("Imput launch date in the next format: dd/mm/yyyy hh:mm");
         fgets(launch_date,100,stdin);
         deleteLinespace(launch_date);
@@ -281,8 +327,10 @@ VoyageData rateVoyage(VoyageData dv, DataUsers du, int idx_user, Date actualDate
     LongString comment;
     String aux;
 
+
     askForString(aux, "Enter the ID of the voyage: ");
     id = checkInt(aux);
+
     for(i = 0; i < dv.num_voyages && !found; i++){
         found = compareVoyageId(id, dv.voyages[i].id);
         if(found == 1){
@@ -319,25 +367,56 @@ VoyageData rateVoyage(VoyageData dv, DataUsers du, int idx_user, Date actualDate
     return dv;
 }
 
-void cancelTicket(VoyageData data, int current_day) {
-    int id_passenger,id_voyage;
-    printf("Insert the id of the passanger of the ticket you want to cancel: ");
-    scanf("%d",&id_passenger);
-    printf("insert the id of the voyage: ");
-    scanf("%d",&id_voyage);
-    if(data.voyages[id_voyage-1].tickets[data.voyages[id_voyage-1].num_tickets-1].id_passenger==id_passenger){
-        if(id_voyage>0 && id_voyage<=data.voyages[id_voyage-1].num_tickets && current_day-data.voyages[id_voyage-1].startDate.day > 2){
-            for(int i=0;i<data.voyages[id_voyage-1].num_tickets;i++){
-                if(data.voyages[id_voyage-1].tickets[i].id_passenger==id_passenger){
-                    data.voyages[id_voyage-1].num_tickets--;
-                    printf("Ticket cancelled successfully!\n");
-                }
-                else{
-                    printf("Error this ticket does not exist\n");
-                }
-            }
-        }else{
-            printf("Error this ticket does not exist\n");
-        }
-    }
+FilterCriteria askFilterCritera(){
+    FilterCriteria criteria;
+    char aux;
+
+    printf("Input start location: ");
+    fgets(criteria.start, 100, stdin);
+    criteria.start[strlen(criteria.start)-1] = '\0'; // Eliminar salto de línea
+
+    printf("Input destination location: ");
+    fgets(criteria.end, sizeof(criteria.end), stdin);
+    criteria.end[strlen(criteria.end)-1] = '\0'; // Eliminar salto de línea
+
+    printf("Input the maximum price: ");
+    scanf("%f", &criteria.max_price);
+
+
+    printf("Imput start date (dd/mm/yyyy hh:mm): ");
+    scanf("%d/%d/%d %d:%d", &criteria.start_date.day, &criteria.start_date.month, &criteria.start_date.year, &criteria.start_date.hour, &criteria.start_date.minutes);
+
+    printf("Input arrival date (dd/mm/yyyy hh:mm): ");
+    scanf("%d/%d/%d %d:%d", &criteria.end_date.day, &criteria.end_date.month, &criteria.end_date.year, &criteria.end_date.hour, &criteria.end_date.minutes);
+
+    printf("Input the minimum duration (in days): ");
+    scanf("%d", &criteria.min_duration);
+
+    printf("Input the maximum duration (in days): ");
+    scanf("%d", &criteria.max_duration);
+
+    scanf("%c",aux);
+    return criteria;
 }
+
+long unsigned int UTILS_toMinutes(Date date) {
+    long unsigned int minutes = date.minutes + date.hour * 60 + date.day * 1440 + date.month * 43200 + date.year * 518400;
+    return minutes;
+}
+
+
+Date UTILS_getCurrentDate() {
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    Date current_date ;
+
+    current_date.minutes = tm.tm_min;
+    current_date.hour = tm.tm_hour;
+    current_date.day = tm.tm_mday;
+    current_date.month = tm.tm_mon + 1;
+    current_date.year = tm.tm_year + 1900;
+    current_date.date = UTILS_toMinutes(current_date);
+
+    return current_date;
+}
+
