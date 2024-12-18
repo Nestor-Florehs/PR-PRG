@@ -78,18 +78,18 @@ int findVoyageIndex(int id,VoyageData data) {
         if (data.voyages[i].id==id) {
             index = i;
         }
-        return index;
     }
+    return index;
 }
 
 int findSpaceshipIndex(int id,DataSpaceship data) {
-    int index=0;
-    for (int i=0;i<data.n_spaceships;i++) {
-        if (data.spaceship[i].id_spaceship==id) {
+    int index = 0;
+    for (int i = 0;i<data.n_spaceships; i++) {
+        if (data.spaceship[i].id_spaceship == id) {
             index = i;
         }
-        return index;
     }
+    return index;
 }
 
 VoyageData buyTicket(VoyageData data){
@@ -238,7 +238,7 @@ VoyageData filterVoyagesBySeats(VoyageData data, int min_seats) {
 }
 
 void splitDate(String date_str, int* day, int* month, int* year, int* hour, int* minutes) {
-         if (sscanf(date_str, "%d/%d/%d %d:%d",day, month, year, &hour, &minutes) != 5) {
+         if (sscanf(date_str, "%d/%d/%d %d:%d",day, month, year, hour, minutes) != 5) {
         fprintf(stderr, "Error: El formato de la cadena no es válido. Debe ser 'dd/mm/yyyy hh:mm'.\n");
         exit(EXIT_FAILURE);
     }
@@ -292,7 +292,7 @@ VoyageData createVoyage(VoyageData data,DataSpaceship spaceships){
         deleteLinespace(arrival_date);
         splitDate(launch_date,&new_voyage.startDate.day,&new_voyage.startDate.month,&new_voyage.startDate.year,&new_voyage.startDate.hour,&new_voyage.startDate.minutes);
         splitDate(arrival_date,&new_voyage.endDate.day,&new_voyage.endDate.month,&new_voyage.endDate.year,&new_voyage.endDate.hour,&new_voyage.endDate.minutes);
-        error = addVoyage(&data,new_voyage);
+        error = addVoyage(&data, new_voyage);
         if(!error) {
             printf("Register successful!\n");
         }
