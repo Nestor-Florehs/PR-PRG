@@ -33,7 +33,6 @@ void executeMainMenu(int option, DataUsers* dataUsers, DataSpaceship* ds, Crew_d
                 do {
                     showAdminMenu();
                     askForString(optionAdmin, "Choose an option: ");
-                    printf("%s\n", optionAdmin);
                     projectOption = checkInt(optionAdmin);
                     if(projectOption != -1) {
                         executeAdminMenu(projectOption, dataUsers, ds, dc, stock, user.id,voyage_data);
@@ -45,7 +44,6 @@ void executeMainMenu(int option, DataUsers* dataUsers, DataSpaceship* ds, Crew_d
 
             //DONE INVESTIGATOR
             if (user.rol == 'R') {
-                int option = 0;
                 do {
                     dp = readProjectsData();
                     showInvestigatorMenu();
