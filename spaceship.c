@@ -1,9 +1,7 @@
 #include "spaceship.h"
 #include "auxiliar.h"
 #include "user.h"
-#include "readData/readData.h"
 #include <stdlib.h>
-#include <time.h>
 
 int atoiAux(String str){
     int num;
@@ -21,7 +19,6 @@ void deleteLineSpace(String str){
 }
 
 void printSpaceship(DataSpaceship data, int i) {
-    printf("Spaceship %d:\n", i + 1);
     printf("ID: %d\n", data.spaceship[i].id_spaceship);
     printf("Name: %s\n", data.spaceship[i].name);
     printf("Crew capacity: %d\n", data.spaceship[i].crew_capacity);
@@ -68,32 +65,32 @@ void addSpaceship(DataSpaceship* d, Spaceship newSpaceship) {
 Spaceship readString(String str) {
     Spaceship spaceship;
 
-    char* token = strtok(str, ",");
-    spaceship.id_spaceship = atoi(token); // Primer valor: id (entero)
+    char* token = strtok(str, "#");
+    spaceship.id_spaceship = atoiAux(token); // Primer valor: id (entero)
 
-    token = strtok(NULL, ",");
+    token = strtok(NULL, "#");
     strcpy(spaceship.name, token); // Segundo valor: name (cadena)
 
-    token = strtok(NULL, ",");
-    spaceship.crew_capacity = atoi(token); // Tercer valor: crew_capacity (entero)
+    token = strtok(NULL, "#");
+    spaceship.crew_capacity = atoiAux(token); // Tercer valor: crew_capacity (entero)
 
-    token = strtok(NULL, ",");
-    spaceship.passenger_capacity = atoi(token); // Cuarto valor: passenger_capacity (entero)
+    token = strtok(NULL, "#");
+    spaceship.passenger_capacity = atoiAux(token); // Cuarto valor: passenger_capacity (entero)
 
-    token = strtok(NULL, ",");
+    token = strtok(NULL, "#");
     strcpy(spaceship.communication, token); // Quinto valor: communication (cadena)
 
-    token = strtok(NULL, ",");
+    token = strtok(NULL, "#");
     strcpy(spaceship.motor, token); // Sexto valor: motor (cadena)
 
-    token = strtok(NULL, ",");
+    token = strtok(NULL, "#");
     strcpy(spaceship.navigation, token); // Séptimo valor: navigation (cadena)
 
-    token = strtok(NULL, ",");
+    token = strtok(NULL, "#");
     strcpy(spaceship.propulsion, token); // Octavo valor: propulsion (cadena)
 
-    token = strtok(NULL, ",");
-    spaceship.potency = atoi(token); // Noveno valor: potency (entero)
+    token = strtok(NULL, "#");
+    spaceship.potency = atoiAux(token); // Noveno valor: potency (entero)
 
     token = strtok(NULL, "\n");
     strcpy(spaceship.instrumentation, token); // Décimo valor: instrumentation (cadena)
@@ -106,14 +103,20 @@ Spaceship readString(String str) {
 
     spaceship.launch = 0;
 
+    spaceship.id_user = 0;
+
+    spaceship.actual_n_crew = 0;
+
     return spaceship;
 }
 
 //tt3 - story 10
-DataSpaceship readSpaceship() {
+DataSpaceship readStock() {
     DataSpaceship data;
+    data.n_spaceships = 0;
+    data.spaceship = NULL;
 
-    FILE *file = fopen("textFiles/space.txt", "r");
+    FILE *file = fopen("../textFiles/stock.txt", "r");
 
     if (file == NULL) {
         printf("Error opening file\n");
@@ -173,37 +176,39 @@ int searchId(DataSpaceship d, DataSpaceship stock) {
 }
 
 //story 10
-DataSpaceship buySpaceship(DataSpaceship d, DataSpaceship* stock, String email) {
+DataSpaceship buySpaceship(DataSpaceship d, DataSpaceship* stock, int id) {
     int index_data, index_stock;
     Spaceship new;
     char aux, option;
-    String name;
     String str;
 
-    printf("Do you want to personalize a spaceship? (Y/N): ");
-    scanf("%c", &option);
-    scanf("%c", &aux);
+    askForString(str, "Do you want to personalize a spaceship? (Y/N): ");
+    option = toupper(str[0]);
 
     switch (option) {
         case 'N':
-            showStock(*stock);
-        printf("Enter name: ");
-        fgets(name, 50, stdin);
-        deleteLineSpace(name);
+            if (stock->n_spaceships < 1) {
+                printf("There are no spaceships in stock");
+            } else {
+                String name;
+                showStock(*stock);
+                askForString(name, "Enter name: ");
 
-        index_data = searchSpaceshipByName(name, *stock);
+                index_data = searchSpaceshipByName(name, *stock);
 
-        if (index_data >= 0) {
-            // Agregar la nave seleccionada a la lista de naves del usuario
-            strcpy(stock->spaceship[index_data].email_user, email);
-            addSpaceship(&d, stock->spaceship[index_data]);
-        } else {
-            printf("(ERROR) Spaceship not found\n");
-        }
+                if (index_data >= 0) {
+                    // Agregar la nave seleccionada a la lista de naves del usuario
+                    stock->spaceship[index_data].id_user = id;
+                    addSpaceship(&d, stock->spaceship[index_data]);
+                    removeStockByData(d, stock);
+                } else {
+                    printf("(ERROR) Spaceship not found\n");
+                }
+            }
         break;
         case 'Y':
             new.id_spaceship = searchId(d, *stock);
-            strcpy(new.email_user, email);
+            new.id_user = id;
 
             do {
                 askForString(new.name, "Enter name: ");
@@ -268,6 +273,8 @@ DataSpaceship buySpaceship(DataSpaceship d, DataSpaceship* stock, String email) 
             new.broken_motor = 0;
             new.broken_pieces = 0;
             new.launch = 0;
+            new.actual_n_crew = 0;
+
             addSpaceship(&d, new);
             break;
         default:
@@ -280,15 +287,13 @@ DataSpaceship buySpaceship(DataSpaceship d, DataSpaceship* stock, String email) 
 
 //tt1 - story 11
 void inputModules(DataSpaceship* data, int index) {
-    char aux;
     String str;
-    int error = 0, option;
+    int error = 0;
     int num = 0;
 
     printf("\t1. Add modules\n\t2. Remove modules\n");
-    printf("Enter option: ");
-    scanf("%d", &option);
-    scanf("%c", &aux);
+    askForString(str, "Enter option: ");
+    int option = checkInt(str);
 
     switch(option) {
         case 1:
@@ -348,15 +353,14 @@ int printMenuModify() {
 
 //story 11
 DataSpaceship modifySpaceship(DataSpaceship data, DataSpaceship stock) {
-    char aux;
     String name;
-    int option;
 
     askForString(name, "Enter name of spaceship: ");
     int index = searchSpaceshipByName(name, data);
     if(index == -1) {
         printf("No such spaceship\n");
     } else {
+        int option = 0;
         int index_stock;
         int index_data;
         int error = 0;
@@ -364,9 +368,9 @@ DataSpaceship modifySpaceship(DataSpaceship data, DataSpaceship stock) {
             String str;
             printf("1. Modify name\n2. Modify crew capacity\n3. Modify passengers capacity\n4. Modify motor\n5. Modify communication"
                    "\n6. Modify navigation\n7. Modify propulsion\n8. Modify potency\n9. Modify instrumentation\n"
-                   "10. Modify modules\n11. Stop modifying\n\nChoose an option: ");
-            scanf("%d", &option);
-            scanf("%c", &aux);
+                   "10. Modify modules\n11. Stop modifying\n");
+            askForString(str, "Enter option: ");
+            option = checkInt(str);
             printf("\n");
 
             switch(option){
@@ -487,16 +491,17 @@ DataSpaceship removeSpaceship (DataSpaceship d) {
             printf("Spaceship does not exist\n");
         } else {
             compactArray(&d, index);
+            printf("Spaceship removed correctly\n");
         }
     }
     return d;
 }
 
 //tt1 - story 14
-int mailFound(String str, DataSpaceship data) {
+int IDFound(int id, DataSpaceship data) {
     int found = 0, i = 0;
     while (!found && i < data.n_spaceships) {
-        if(strcmp(data.spaceship[i].email_user, str) == 0) {
+        if (data.spaceship[i].id_user == id) {
             found = 1;
         }
         i++;
@@ -504,9 +509,9 @@ int mailFound(String str, DataSpaceship data) {
     return found;
 }
 
-int coincidenceMail(String str, Spaceship spaceship) {
-    int found = 0, i = 0;
-    if(strcmp(spaceship.email_user, str) == 0) {
+int coincidenceIdUser(int id, Spaceship spaceship) {
+    int found = 0;
+    if (spaceship.id_user == id) {
         found = 1;
     }
 
@@ -514,11 +519,14 @@ int coincidenceMail(String str, Spaceship spaceship) {
 }
 
 //tt2 - story 14
-void printBoughtSpaceship (DataSpaceship data, String mail) {
-    if (mailFound(mail, data)) {
+void printBoughtSpaceship (DataSpaceship data, int id) {
+    if (IDFound(id, data)) {
+        int boughtSpaceship = 0;
         for (int i = 0; i < data.n_spaceships; i++) {
-            if (coincidenceMail(mail, data.spaceship[i])) {
+            printf("Spaceship %d: \n", boughtSpaceship + 1);
+            if (coincidenceIdUser(id, data.spaceship[i])) {
                 printSpaceship(data, i);
+                boughtSpaceship++;
             }
         }
     } else {
@@ -527,8 +535,8 @@ void printBoughtSpaceship (DataSpaceship data, String mail) {
 }
 
 //story 14
-void showSpaceship (DataSpaceship d, String mail) {
-    printBoughtSpaceship(d, mail);
+void showSpaceship (DataSpaceship d, int id) {
+    printBoughtSpaceship(d, id);
 }
 
 //tt1 - story 16
@@ -638,10 +646,7 @@ void filterSpaceship(DataSpaceship data) {
 
 //tt1 - story 12
 int canRepair(Spaceship spaceship) {
-    if (!spaceship.broken_motor && spaceship.broken_pieces < 4) {
-        return 1;
-    }
-    return 0;
+    return !spaceship.broken_motor && spaceship.broken_pieces < 4;
 }
 
 //tt2 - story 12

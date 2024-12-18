@@ -7,7 +7,7 @@ typedef char String[100];
 
 typedef struct {
     int id_spaceship;
-    String email_user;
+    int id_user;
     String name;
     int crew_capacity;
     int passenger_capacity;
@@ -21,7 +21,7 @@ typedef struct {
     int module;
     int broken_pieces;
     int launch;
-    int indexVoyage;
+    int actual_n_crew;
 } Spaceship;
 
 typedef struct {
@@ -29,19 +29,17 @@ typedef struct {
     Spaceship* spaceship;
 } DataSpaceship;
 
-DataSpaceship buySpaceship(DataSpaceship d, DataSpaceship* stock, String email);
+DataSpaceship buySpaceship(DataSpaceship d, DataSpaceship* stock, int id);
 
 DataSpaceship readSpaceship();
 
-DataSpaceship removeSpaceship (DataSpaceship data);
+void printSpaceship(DataSpaceship data, int i);
 
-void showSpaceship(DataSpaceship data, String mail);
+DataSpaceship removeSpaceship (DataSpaceship data);
 
 DataSpaceship modifySpaceship(DataSpaceship data, DataSpaceship stock);
 
 void filterSpaceship(DataSpaceship data);
-
-//DataSpaceship launchSpaceship(DataSpaceship data, struct VoyageData voyage);
 
 DataSpaceship repairSpaceship(DataSpaceship data);
 
@@ -50,5 +48,11 @@ int atoiAux(String str);
 void addSpaceship(DataSpaceship* d, Spaceship newSpaceship);
 
 void removeStockByData(DataSpaceship d, DataSpaceship* stock);
+
+DataSpaceship readStock();
+
+void showSpaceship(DataSpaceship data, int id);
+
+int searchSpaceshipByName(String str, DataSpaceship data);
 
 #endif
