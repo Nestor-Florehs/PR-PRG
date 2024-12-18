@@ -1,0 +1,3 @@
+1#S1#4#5#Com#motor1#nav#prop#50#science
+2#S2#4#5#Com#motor1#nav#prop#50#science
+3#S3#10#4#Com#motor2#nav1#prop1#100#No
