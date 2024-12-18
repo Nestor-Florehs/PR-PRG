@@ -1,0 +1,4 @@
+Id#duration#price#itinerary#start#end#startDate#endDate#spaceshipId#id_voyage_ticket#id_passenger_ticket#date_tiket#rating_tiket#comment#num_tickets
+2#12#129.00#Medio#Iraq#New York#11/09/2001/0/0#11/09/2001/32760/327494398#1#0#335#0/0/0/335/977869520#0##1
+3#4#5.00#Earth#Saturn#16/12/2024/0/0#18/12/2024/32764/-121885954#01/00/0000/0/0#0#0#335#111/0/0/335/977869520#0##1
+4#2#124.00#aaa#ttt#12/12/1000/0/0#12/12/11111/32764/-121885954#01/00/0000/0/0#0#0#335#0/0/0/335/977899952#0##1
