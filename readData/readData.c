@@ -1,5 +1,7 @@
 #include "readData.h"
 #include "../user.h"
+#include "../crew.h"
+#include "../voyage.h"
 
 int readData(LongString info, String str, int i){
     int k = 0;
@@ -40,6 +42,73 @@ int addProject2(DataProjects * d, Project newProject){
     return error;
 }
 
+int addCrew2(Crew_data* d, Crew newCrew) {
+    int error = 0;
+
+    // Intenta reasignar memoria para el nuevo usuario
+    Crew* aux = NULL;
+    aux = realloc(d->crew, (d->n_crew + 1) * sizeof(Crew));
+
+    // Si realloc falla, retorna error sin perder el puntero original
+    if (aux == NULL) {
+        printf("(ERROR) Memory allocation failed.\n");
+        error = 1;
+    } else {
+        // Si realloc tiene éxito, actualiza el puntero y el número de usuarios
+        d->crew = aux;
+        d->crew[d->n_crew] = newCrew;
+        d->n_crew++;
+        if(d->crew == NULL){
+            printf("(ERROR) Memory pointers elsewhere\n");
+            error = 1;
+        }
+    }
+
+    return error;
+}
+
+int addIdSpaceship2(Crew_data* d, int i, Id_Spaceship newIdSpaceship) {
+    int error = 0;
+
+    if (d == NULL || d->crew == NULL) {
+        printf("(ERROR) Invalid pointer.\n");
+        return 1;
+    }
+
+    if (i < 0 || i >= d->n_crew) {
+        printf("(ERROR) Index out of bounds.\n");
+        return 1;
+    }
+
+    // Obtener el puntero a Id_spaceship del miembro Crew
+    Id_spaceship* id_spaceship_data = &d->crew[i].id_spaceship;
+
+    // Inicializar id_spaceship si es NULL
+    if (id_spaceship_data->id_spaceship == NULL) {
+        id_spaceship_data->id_spaceship = malloc(sizeof(Id_Spaceship));
+        if (id_spaceship_data->id_spaceship == NULL) {
+            printf("(ERROR) Memory allocation failed during initialization.\n");
+            return 1;
+        }
+        id_spaceship_data->n_spaceships = 0;
+    }
+
+    // Intentar reasignar memoria para el arreglo de Id_Spaceship
+    Id_Spaceship* aux = realloc(id_spaceship_data->id_spaceship, (id_spaceship_data->n_spaceships + 1) * sizeof(Id_Spaceship));
+
+    if (aux == NULL) {
+        // Si falla realloc, retornar error sin modificar el puntero original
+        printf("(ERROR) Memory allocation failed.\n");
+        error = 1;
+    } else {
+        // Si realloc es exitoso, actualizar el puntero y agregar el nuevo elemento
+        id_spaceship_data->id_spaceship = aux;
+        id_spaceship_data->id_spaceship[id_spaceship_data->n_spaceships] = newIdSpaceship;
+        id_spaceship_data->n_spaceships++;
+    }
+
+    return error;
+}
 
 DataUsers readUsersData(){
     DataUsers du;
@@ -49,9 +118,9 @@ DataUsers readUsersData(){
     String num, aux;
     du.n_users = 0;
     du.user = NULL;
-    FILE *f = fopen("C:\\Documentos\\ingenieria informatica\\Segundo_carrera\\Pr Proj\\prpr\\textFiles\\RegisterUser.txt", "r");
+    FILE *f = fopen("..\\textFiles\\RegisterUser.txt", "r");
     if(f == NULL){
-        printf("error opening file");
+        printf("Error opening file");
     }else{
         fgets(num, 50, f);
         num[strlen(num)-1] = '\0';
@@ -82,9 +151,9 @@ DataProjects readProjectsData() {
     String num, aux;
     dp.n_projects = 0;
     dp.project = NULL;
-    f = fopen("C:\\Documentos\\ingenieria informatica\\Segundo_carrera\\Pr Proj\\prpr\\textFiles\\Projects.txt", "r");
+    f = fopen("..\\textFiles\\Projects.txt", "r");
     if(f == NULL){
-        printf("error opening file");
+        printf("Error opening file");
     }else{
         fgets(num, 50, f);
         num[strlen(num)-1] = '\0';
@@ -126,7 +195,7 @@ DataSpaceship readSpaceshipsData(DataSpaceship* stock) {
     DataSpaceship ds;
     ds.n_spaceships = 0;
     ds.spaceship = NULL;
-    FILE *f = fopen("C:\\Documentos\\ingenieria informatica\\Segundo_carrera\\Pr Proj\\prpr\\textFiles\\Spaceships.txt", "r");
+    FILE *f = fopen("../textFiles/Spaceships.txt", "r");
     if(f == NULL){
         printf("error opening file");
     }else{
@@ -142,7 +211,8 @@ DataSpaceship readSpaceshipsData(DataSpaceship* stock) {
             int i = 0;
             i = readData(info, aux, i);
             s.id_spaceship = atoiAux(aux);
-            i = readData(info, s.email_user, i);
+            i = readData(info, aux, i);
+            s.id_user = atoiAux(aux);
             i = readData(info, s.name, i);
             i = readData(info, aux, i);
             s.crew_capacity = atoiAux(aux);
@@ -164,7 +234,7 @@ DataSpaceship readSpaceshipsData(DataSpaceship* stock) {
             i = readData(info, aux, i);
             s.launch = atoiAux(aux);
             i = readData(info, aux, i);
-            s.indexVoyage = atoiAux(aux);
+            s.actual_n_crew = atoiAux(aux);
 
             addSpaceship(&ds, s);
         }
@@ -174,15 +244,62 @@ DataSpaceship readSpaceshipsData(DataSpaceship* stock) {
     return ds;
 }
 
+Crew_data readCrewData() {
+    Crew_data dc;
+    int i, j, k, error = 0, n_crew;
+    LongString info;
+    FILE* f;
+    Crew crew;
+    Id_Spaceship id_spaceship;
+    String num, aux;
+    dc.n_crew = 0;
+    dc.crew = NULL;
+    f = fopen("..\\textFiles\\Crew.txt", "r");
+    if(f == NULL){
+        printf("Error opening file");
+    }else{
+        fgets(num, 50, f);
+        num[strlen(num)-1] = '\0';
+        n_crew = atoiAux(num);
+        for(j = 0; j < n_crew; j++) {
+            fgets(info, 999, f);
+            i = 0;
+            i = readData(info, aux, i);
+            crew.id = atoi(aux);
+            i = readData(info, crew.name, i);
+            i = readData(info, aux, i);
+            crew.age = atoi(aux);
+            i = readData(info, crew.rol, i);
+            i = readData(info, crew.uniform_color, i);
+            i = readData(info, crew.contact_info, i);
+            i = readData(info, aux, i);
+            crew.support = atoi(aux);
+            i = readData(info, aux, i);
+            crew.id_spaceship.n_spaceships = atoi(aux);
+            crew.id_spaceship.id_spaceship = NULL;
+            error = addCrew2(&dc, crew);
+            for (k = 0; k < crew.id_spaceship.n_spaceships; k++) {
+                i = readData(info, aux, i);
+                id_spaceship.id = atoi(aux);
+                i = readData(info, aux, i);
+                id_spaceship.id_spaceship = atoi(aux);
+                addIdSpaceship2(&dc, j, id_spaceship);
+            }
+        }
+        fclose(f);
+    }
+    return dc;
+}
+
 void saveSpaceship(DataSpaceship ds) {
-    FILE* f = fopen("C:\\Documentos\\ingenieria informatica\\Segundo_carrera\\Pr Proj\\prpr\\textFiles\\Spaceships.txt", "w");
+    FILE* f = fopen("../textFiles/Spaceships.txt", "w");
     if(f == NULL){
         printf("error opening file");
     }else{
         fprintf(f, "%d\n", ds.n_spaceships);
         for (int i = 0; i < ds.n_spaceships; i++){
             fprintf(f, "%d#", ds.spaceship[i].id_spaceship);
-            fprintf(f, "%s#", ds.spaceship[i].email_user);
+            fprintf(f, "%d#", ds.spaceship[i].id_user);
             fprintf(f, "%s#", ds.spaceship[i].name);
             fprintf(f, "%d#", ds.spaceship[i].crew_capacity);
             fprintf(f, "%d#", ds.spaceship[i].passenger_capacity);
@@ -196,14 +313,14 @@ void saveSpaceship(DataSpaceship ds) {
             fprintf(f, "%d#", ds.spaceship[i].module);
             fprintf(f, "%d#", ds.spaceship[i].broken_pieces);
             fprintf(f, "%d#", ds.spaceship[i].launch);
-            fprintf(f, "%d\n", ds.spaceship[i].indexVoyage);
+            fprintf(f, "%d\n", ds.spaceship[i].actual_n_crew);
         }
         fclose(f);
     }
 }
 
 void saveUsersToFile(DataUsers d) {
-    FILE* file = fopen("C:\\Documentos\\ingenieria informatica\\Segundo_carrera\\Pr Proj\\prpr\\textFiles\\RegisterUser.txt", "w"); // Modo texto para escritura
+    FILE* file = fopen("..\\textFiles\\RegisterUser.txt", "w"); // Modo texto para escritura
     if (file == NULL) {
         printf("(ERROR) Could not open file for writing.\n");
         return;
@@ -229,10 +346,33 @@ void saveUsersToFile(DataUsers d) {
     fclose(file);
 }
 
-
+void saveCrew(Crew_data dc) {
+    FILE* f = fopen("..\\textFiles\\Crew.txt", "w");
+    if(f == NULL){
+        printf("Error opening file");
+    }else{
+        fprintf(f, "%d\n", dc.n_crew);
+        for (int i = 0; i < dc.n_crew; i++){
+            fprintf(f, "%d#", dc.crew[i].id);
+            fprintf(f, "%s#", dc.crew[i].name);
+            fprintf(f, "%d#", dc.crew[i].age);
+            fprintf(f, "%s#", dc.crew[i].rol);
+            fprintf(f, "%s#", dc.crew[i].uniform_color);
+            fprintf(f, "%s#", dc.crew[i].contact_info);
+            fprintf(f, "%d#", dc.crew[i].support);
+            fprintf(f, "%d", dc.crew[i].id_spaceship.n_spaceships);
+            for (int j = 0; j < dc.crew[i].id_spaceship.n_spaceships; j++) {
+                fprintf(f, "#%d#", dc.crew[i].id_spaceship.id_spaceship[j].id);
+                fprintf(f, "%d", dc.crew[i].id_spaceship.id_spaceship[j].id_spaceship);
+            }
+            fprintf(f, "\n");
+        }
+        fclose(f);
+    }
+}
 
 void loadAndShowUsersFromTextFile() {
-    FILE* file = fopen("C:\\Documentos\\ingenieria informatica\\Segundo_carrera\\Pr Proj\\Proyecto\\prprI2425-A-g1\\users.txt", "r");
+    FILE* file = fopen("..\\textFiles\\users.txt", "r");
     if (file == NULL) {
         printf("(ERROR) Could not open file %s for reading.\n", "C:\\Documentos\\ingenieria informatica\\Segundo_carrera\\Pr Proj\\Proyecto\\prprI2425-A-g1\\users.txt");
         return;
@@ -251,7 +391,7 @@ void loadAndShowUsersFromTextFile() {
     }
 
     // Leer cada línea y procesarla
-    printf("\nUsuarios cargados desde %s:\n", "C:\\Documentos\\ingenieria informatica\\Segundo_carrera\\Pr Proj\\Proyecto\\prprI2425-A-g1\\users.txt");
+    printf("\nUsuarios cargados desde %s:\n", "..\\textFiles\\users.txt");
     while (fgets(line, sizeof(line), file)) {
         User user;
         // Dividir la línea en tokens basados en comas
@@ -289,9 +429,9 @@ void loadAndShowUsersFromTextFile() {
 void saveProject(DataProjects dp){
     int i, j;
     FILE*f;
-    f = fopen("C:\\Users\\ggpp8\\OneDrive\\Escritorio\\La Salle Enginyeria\\2n curs\\ProjectesDeProg\\Prog_I\\P1\\prueba\\textFiles\\Projects.txt", "w");
+    f = fopen("..\\textFiles\\Projects.txt", "w");
     if(f == NULL){
-        printf("error opening file");
+        printf("Error opening file");
     }else{
         fprintf(f, "%d\n", dp.n_projects);
         for(i = 0; i < dp.n_projects; i++){
@@ -318,9 +458,9 @@ void saveProject(DataProjects dp){
 void saveUsers(DataUsers du){
     int i;
     FILE*f;
-    f = fopen("C:\\Documentos\\ingenieria informatica\\Segundo_carrera\\Pr Proj\\prpr\\textFiles\\RegisterUser.txt", "w");
+    f = fopen("..\\textFiles\\RegisterUser.txt", "w");
     if(f == NULL){
-        printf("error opening file");
+        printf("Error opening file");
     }else{
         fprintf(f, "%d\n", du.n_users);
         for (i = 0; i < du.n_users; i++) {
@@ -341,7 +481,7 @@ DataUsers loadUsersFromFile() {
     d.n_users = 0;
     d.user = NULL;
 
-    FILE* file = fopen("C:\\Documentos\\ingenieria informatica\\Segundo_carrera\\Pr Proj\\Proyecto\\prprI2425-A-g1\\users.txt", "r"); // Modo texto para lectura
+    FILE* file = fopen("..\\textFiles\\users.txt", "r"); // Modo texto para lectura
     if (file == NULL) {
         printf("(ERROR) Could not open file %s for reading.\n", "C:\\Documentos\\ingenieria informatica\\Segundo_carrera\\Pr Proj\\Proyecto\\prprI2425-A-g1\\users.txt");
         return d;
@@ -401,5 +541,197 @@ DataUsers loadUsersFromFile() {
 
     fclose(file);
     return d;
+}
+
+VoyageData readVoyagesFromFile( char* filename) {
+    FILE* file = fopen(filename, "r");
+    if (file == NULL) {
+        printf("(ERROR) Could not open file for reading.\n");
+        VoyageData emptyData;
+        emptyData.num_voyages=0;
+        emptyData.voyages=NULL;
+        return emptyData;
+    }
+
+    VoyageData data;
+    data.num_voyages=0;
+    data.voyages=NULL;
+    LongString line;
+
+    // Leer la cabecera y descartarla
+    if (fgets(line, sizeof(line), file) == NULL) {
+        fclose(file);
+        printf("(ERROR) Empty or malformed file.\n");
+        return data;
+    }
+
+    // Leer cada línea del archivo
+    while (fgets(line, sizeof(line), file) != NULL) {
+        Voyage* temp = realloc(data.voyages, (data.num_voyages + 1) * sizeof(Voyage));
+        if (temp == NULL) {
+            printf("(ERROR) Memory allocation failed.\n");
+            free(data.voyages);
+            fclose(file);
+            data.voyages = NULL;
+            data.num_voyages = 0;
+            return data;
+        }
+        data.voyages = temp;
+        Voyage* voyage = &data.voyages[data.num_voyages];
+        memset(voyage, 0, sizeof(Voyage));
+        data.num_voyages++;
+
+        // Parsear la línea
+        char* token = strtok(line, "#");
+        voyage->id = atoi(token);
+
+        token = strtok(NULL, "#");
+        voyage->duration = atoi(token);
+
+        token = strtok(NULL, "#");
+        voyage->price = atof(token);
+
+        // Leer el itinerario
+        token = strtok(NULL, "#");
+        voyage->itinerary_stops = 0;
+        if(token != NULL&&strstr(token,"-")==NULL){
+            strncpy(voyage->itinerary[voyage->itinerary_stops++], token, sizeof(String));
+        }
+
+        if (token != NULL && strchr(token, '-') != NULL) {
+            char* start = token;
+            char* end;
+
+            while ((end = strchr(start, '-')) != NULL) {
+                *end = '\0';
+                strncpy(voyage->itinerary[voyage->itinerary_stops++], start, sizeof(String));
+                start = end + 1;
+            }
+
+            if (*start != '\0') {
+                strncpy(voyage->itinerary[voyage->itinerary_stops++], start, sizeof(String));
+            }
+        }
+
+        // Leer start y end
+        token = strtok(NULL, "#");
+        if (token != NULL) {
+            strncpy(voyage->start, token, sizeof(String));
+        }
+
+        token = strtok(NULL, "#");
+        if (token != NULL) {
+            strncpy(voyage->end, token, sizeof(String));
+        }
+
+        // Leer fechas de inicio y fin
+        token = strtok(NULL, "#");
+        if (token != NULL) {
+            sscanf(token, "%d/%d/%d/%d/%d", &voyage->startDate.day, &voyage->startDate.month, &voyage->startDate.year, &voyage->startDate.hour, &voyage->startDate.minutes);
+        }
+
+        token = strtok(NULL, "#");
+        if (token != NULL) {
+            sscanf(token, "%d/%d/%d/%d/%d", &voyage->endDate.day, &voyage->endDate.month, &voyage->endDate.year, &voyage->endDate.hour, &voyage->endDate.minutes);
+        }
+
+        // Leer ID de la nave espacial
+        token = strtok(NULL, "#");
+        if (token != NULL) {
+            voyage->spaceship.id_spaceship = atoi(token);
+        }
+
+        // Leer tickets
+        token = strtok(NULL, "#");
+        voyage->num_tickets = 0;
+        voyage->tickets = NULL;
+
+        if (token != NULL && strlen(token) > 0) {
+            char* ticketToken = strtok(token, ";");
+            while (ticketToken != NULL) {
+                Ticket* tempTickets = realloc(voyage->tickets, (voyage->num_tickets + 1) * sizeof(Ticket));
+                if (tempTickets == NULL) {
+                    printf("(ERROR) Memory allocation failed for tickets.\n");
+                    free(voyage->tickets);
+                    voyage->tickets = NULL;
+                    voyage->num_tickets = 0;
+                    break;
+                }
+                voyage->tickets = tempTickets;
+                Ticket* ticket = &voyage->tickets[voyage->num_tickets++];
+
+                sscanf(ticketToken, "%d#%d#%d/%d/%d/%d/%d#%d#%s",
+                       &ticket->id_voyage,
+                       &ticket->id_passenger,
+                       &ticket->date.day,
+                       &ticket->date.month,
+                       &ticket->date.year,
+                       &ticket->date.hour,
+                       &ticket->date.minutes,
+                       &ticket->rating,
+                       ticket->comment);
+
+                ticketToken = strtok(NULL, ";");
+            }
+        }
+    }
+
+    fclose(file);
+    return data;
+}
+
+void saveVoyagesToFile(VoyageData data){
+    FILE* file = fopen("../textFiles/voyages.txt","w");
+    String itinerary;
+    int index;
+    if (file == NULL) {
+        printf("(ERROR) Could not open file for writing.\n");
+        return;
+    }else{
+        fprintf(file,"Id#duration#price#itinerary#start#end#startDate#endDate#spaceshipId#id_voyage_ticket#id_passenger_ticket#date_tiket#rating_tiket#comment#num_tickets\n");
+
+        for (int i = 0; i < data.num_voyages; i++) {
+            Voyage voyage = data.voyages[i];
+
+            // Escribir datos básicos del viaje
+            fprintf(file, "%d#%d#%.2f#", voyage.id, voyage.duration, voyage.price);
+
+            // Escribir el itinerario
+            for (int j = 0; j < voyage.itinerary_stops; j++) {
+                fprintf(file, "%s", voyage.itinerary[j]);
+                if (j < voyage.itinerary_stops - 1) {
+                    fprintf(file, "-"); // Separador entre paradas del itinerario
+                }
+            }
+            fprintf(file, "#");
+
+            // Escribir los campos de inicio y fin
+            fprintf(file, "%s#%s#", voyage.start, voyage.end);
+
+            // Escribir fechas de inicio y fin
+            fprintf(file, "%02d/%02d/%04d/%d/%d#%02d/%02d/%04d/%d/%d#",
+                    voyage.startDate.day, voyage.startDate.month, voyage.startDate.year, voyage.startDate.hour, voyage.startDate.minutes,
+                    voyage.endDate.day, voyage.endDate.month, voyage.endDate.year, voyage.endDate.hour, voyage.endDate.minutes);
+
+            // Escribir ID de la nave espacial
+            fprintf(file, "%d#", voyage.spaceship.id_spaceship);
+
+            // Escribir información de los tickets
+            for (int k = 0; k < voyage.num_tickets; k++) {
+                Ticket ticket = voyage.tickets[k];
+                fprintf(file, "%d#%d#%d/%d/%d/%d/%d",
+                        ticket.id_voyage, ticket.id_passenger,
+                        ticket.date.day, ticket.date.month, ticket.date.year,ticket.date.hour,ticket.date.minutes);
+                fprintf(file,"#%d#%s",ticket.rating,ticket.comment);
+                if (k < voyage.num_tickets - 1) {
+                    fprintf(file, ";"); // Separador entre tickets
+                }
+            }
+
+            fprintf(file, "#%d\n", voyage.num_tickets); // Finalizar la línea con num_tickets
+        }
+
+        fclose(file);
+    }
 }
 
