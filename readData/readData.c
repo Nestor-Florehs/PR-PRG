@@ -734,4 +734,3 @@ void saveVoyagesToFile(VoyageData data){
         fclose(file);
     }
 }
-
