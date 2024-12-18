@@ -84,6 +84,7 @@ int findSpaceshipIndex(int id,DataSpaceship data);
 int findVoyageIndex(int id,VoyageData data);
 Date UTILS_getCurrentDate();
 long unsigned int UTILS_toMinutes(Date date);
+VoyageData cancelTicket(VoyageData data);
 
 
 #endif// VOYAGE_H

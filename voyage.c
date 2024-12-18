@@ -210,6 +210,33 @@ int isDateInRange(Date date, Date start_date, Date end_date) {
     return filteredData;
 }
 
+VoyageData cancelTicket(VoyageData data){
+
+    int id_passenger,id_voyage;
+    printf("Insert the id of the passanger of the ticket you want to cancel: ");
+    scanf("%d",&id_passenger);
+    printf("insert the id of the voyage: ");
+    scanf("%d",&id_voyage);
+    if(data.voyages[id_voyage-1].tickets[data.voyages[id_voyage-1].num_tickets-1].id_passenger==id_passenger){
+
+        if((id_voyage>0 && id_voyage<=data.voyages[id_voyage-1].num_tickets) && (current_day-data.voyages[id_voyage-1].date.day>2)){
+            for(int i=0;i<data.voyages[id_voyage-1].num_tickets;i++){
+                if(data.voyages[id_voyage-1].tickets[i].id_passenger==id_passenger){
+                    data.voyages[id_voyage-1].num_tickets--;
+                    printf("Ticket cancelled successfully!\n");
+                }
+                else{
+                    printf("Error this ticket does not exist\n");
+                }
+            }
+        }else{
+            printf("Error this ticket does not exist\n");
+        }
+    }
+    return data;
+}
+
+
 VoyageData filterVoyagesBySeats(VoyageData data, int min_seats) {
     VoyageData filteredData;
     filteredData.voyages = NULL;

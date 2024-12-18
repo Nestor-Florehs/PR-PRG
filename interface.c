@@ -326,6 +326,7 @@ void executeClientMenu(int option,DataUsers* data_users, VoyageData* voyage_data
         //rateVoyage(*voyage_data,*data_users,1,date);
         break;
      case 7:
+         *voyage_data=cancelTicket(*voyage_data);
          break;
      case 8:
          break;
