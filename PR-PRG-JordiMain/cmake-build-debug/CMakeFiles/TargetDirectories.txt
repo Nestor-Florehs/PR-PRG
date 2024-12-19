@@ -1,0 +1,3 @@
+C:/Users/ggpp8/Downloads/PR-PRG-JordiMain/PR-PRG-JordiMain/cmake-build-debug/CMakeFiles/prpr.dir
+C:/Users/ggpp8/Downloads/PR-PRG-JordiMain/PR-PRG-JordiMain/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/ggpp8/Downloads/PR-PRG-JordiMain/PR-PRG-JordiMain/cmake-build-debug/CMakeFiles/rebuild_cache.dir

@@ -1,0 +1,1 @@
+Id#duration#price#itinerary#start#end#startDate#endDate#spaceshipId#id_voyage_ticket#id_passenger_ticket#date_tiket#rating_tiket#comment#num_tickets
