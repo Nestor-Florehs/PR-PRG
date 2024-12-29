@@ -3,7 +3,6 @@
 
 #include "user.h"
 
-
 typedef char String[100];
 typedef char LongString[1000];
 

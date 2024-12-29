@@ -1,6 +1,10 @@
 #include "project.h"
 #include "auxiliar.h"
 #include <time.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
 
 int addProject(DataProjects * d, Project newProject){
     int error = 0;

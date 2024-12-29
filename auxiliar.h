@@ -17,4 +17,6 @@ int checkHashtag(String str);
 
 void deleteLinespace(char* str);
 
+char* itoa(int value, String str, int base);
+
 #endif

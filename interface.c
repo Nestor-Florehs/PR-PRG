@@ -3,7 +3,10 @@
 #include "user.h"
 #include "readData/readData.h"
 #include "auxiliar.h"
+#include "crew.h"
 #include "spaceship.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 
 void showAdminProjectsMenu() {
@@ -201,22 +204,22 @@ DataUsers runManageResearcher(DataUsers data_users) {
     return data_users;
 }
 
-DataUsers executeAdminMenu(int choice, DataUsers d, DataSpaceship ds, DataSpaceship stock, String mail) {
+void executeAdminMenu(int choice, DataUsers* d, DataSpaceship* ds, Crew_data* dc, DataSpaceship stock, String mail) {
     int projectOption = 0;
     DataProjects dp;
     String option;
     switch (choice) {
         case 1:
-            d = runManageClient(d);
+            *d = runManageClient(*d);
             break;
         case 2:
-            d = runManageResearcher(d);
+            *d = runManageResearcher(*d);
             break;
         case 3:
-            ds = runManageSpaceship(ds, &stock, mail);
+            *ds = runManageSpaceship(*ds, &stock, mail);
             break;
         case 4:
-            printf("Manage Crew\n");
+            *dc = menuCrew(*dc, *ds);
             break;
         case 5:
             do {
@@ -225,7 +228,7 @@ DataUsers executeAdminMenu(int choice, DataUsers d, DataSpaceship ds, DataSpaces
                 projectOption = checkInt(option);
                 if(projectOption != -1) {
                     dp = readProjectsData();
-                    d = executeAdminProjectsMenu(projectOption, d, dp);
+                    *d = executeAdminProjectsMenu(projectOption, *d, dp);
                 }else {
                     printf("Please enter a valid option!");
                 }
@@ -240,7 +243,6 @@ DataUsers executeAdminMenu(int choice, DataUsers d, DataSpaceship ds, DataSpaces
             printf("Invalid Choice\n");
     }
 
-    return d;
 }
 
 void showInvestigatorMenu() {

@@ -1,9 +1,10 @@
 #include "spaceship.h"
 #include "auxiliar.h"
 #include "user.h"
-#include "readData/readData.h"
 #include <stdlib.h>
-#include <time.h>
+#include <string.h>
+#include <ctype.h>
+#include <stdio.h>
 
 int atoiAux(String str){
     int num;
@@ -37,6 +38,8 @@ void printSpaceship(DataSpaceship data, int i) {
     printf("Instrumentation: %s\n", data.spaceship[i].instrumentation);
     printf("Modules: %d\n", data.spaceship[i].module);
     printf("Pieces broken: %d\n", data.spaceship[i].broken_pieces);
+    printf("Pieces broken: %d\n", data.spaceship[i].broken_pieces);
+    printf("Number of crew assigned: %d\n", data.spaceship[i].actual_n_crew);
     printf("\n");
 }
 
@@ -113,7 +116,7 @@ Spaceship readString(String str) {
 DataSpaceship readSpaceship() {
     DataSpaceship data;
 
-    FILE *file = fopen("textFiles/space.txt", "r");
+    FILE *file = fopen("C:\\Documentos\\ingenieria informatica\\Segundo_carrera\\Pr Proj\\prpr\\textFiles\\space.txt", "r");
 
     if (file == NULL) {
         printf("Error opening file\n");
@@ -268,6 +271,7 @@ DataSpaceship buySpaceship(DataSpaceship d, DataSpaceship* stock, String email) 
             new.broken_motor = 0;
             new.broken_pieces = 0;
             new.launch = 0;
+            new.actual_n_crew = 0;
             addSpaceship(&d, new);
             break;
         default:

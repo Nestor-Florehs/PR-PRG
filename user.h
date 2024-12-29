@@ -1,11 +1,6 @@
 #ifndef PRUEBA_USER_H
 #define PRUEBA_USER_H
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <ctype.h>
-
 typedef char String[100];
 
 typedef struct {

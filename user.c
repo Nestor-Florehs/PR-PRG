@@ -2,7 +2,11 @@
 // Created by nesto on 27/10/2024.
 //
 #include "user.h"
-// #include <file.h>
+#include <stddef.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
 #include "auxiliar.h"
 
 int addUser(DataUsers* d, User newUser) {
@@ -140,11 +144,11 @@ DataUsers createReasercher(DataUsers d){
     int error = 0;
 
     printf("Enter your name: ");
-    fgets(newUser.name, 50, stdin);
+    fgets(newUser.name, 100, stdin);
     deleteLinespace(newUser.name);
     error = checkComma(newUser.name);
     printf("Enter your mail: ");
-    fgets(newUser.email, 150, stdin);
+    fgets(newUser.email, 100, stdin);
     deleteLinespace(newUser.email);
     if(error) {
         for (int i = 0; i < d.n_users; i++) {
@@ -161,7 +165,7 @@ DataUsers createReasercher(DataUsers d){
         }
     }else {
         printf("Enter your password: ");
-        fgets(newUser.password, 50, stdin);
+        fgets(newUser.password, 100, stdin);
         deleteLinespace(newUser.password);
         if(strlen(newUser.password) < 8){
             error = 1;

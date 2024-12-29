@@ -1,8 +1,10 @@
 #include "voyage.h"
 #include "user.h"
 #include "auxiliar.h"
-
 #include <time.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 struct tm dateToTm(Date date) {
     struct tm tm_date = {0};  // Inicializa la estructura a ceros
