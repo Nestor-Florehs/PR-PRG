@@ -1,9 +1,8 @@
-#ifndef PRUEBA_READDATA_H
-#define PRUEBA_READDATA_H
+#ifndef READDATA_H
+#define READDATA_H
 #include "../project.h"
 #include "../spaceship.h"
 #include "../crew.h"
-#include "../voyage.h"
 
 int readData(LongString info, String str, int i);
 
@@ -23,7 +22,4 @@ void saveCrew(Crew_data dc);
 
 void saveUsers(DataUsers data);
 
-void saveVoyagesToFile(VoyageData data);
-VoyageData readVoyagesFromFile(char* filename);
-
-#endif //PRUEBA_READDATA_H
+#endif //READDATA_H
