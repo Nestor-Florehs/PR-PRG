@@ -72,7 +72,7 @@ DataProjects createProject(DataProjects dp, DataUsers du, int user_idx){
                             }
                         }
                         if(!found){
-                            printf("This investigator does not exist\n");
+                            printf("(ERROR) This investigator does not exist\n");
                         }
                     }
                 }while(quit == 0);
@@ -367,9 +367,9 @@ DataProjects postProject(DataProjects dp){
                     if (checkDone(dp.project[i].status)) {
                         dp.project[i].posted = 1;
                         savePostedProject(dp);
-                        printf("Your project has been posted on a file\n");
+                        printf("Your project has been posted on a file.\n");
                     } else {
-                        printf("Your project must reach the DONE Status for being posted A\n");
+                        printf("Your project must reach the DONE Status for being posted\n");
                     }
                 }else{
                     printf("Your project must reach the DONE Status for being posted\n");
