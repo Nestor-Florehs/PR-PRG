@@ -14,28 +14,36 @@ void askForString(String str, char* message) {
     int error = 1;
 
     while (error) {
+        error = 0;
         printf("%s", message);
         fgets(str, 100, stdin);
         str[strlen(str)-1] = '\0';
         error = checkHashtag(str);
         if (error) {
-            printf("the string contains '#'.\n");
+            printf("(ERROR) The text cannot contain '#'.\n");
+        }
+        if (str[0] == '\0') {
+            printf("(ERROR) Enter a valid text.\n");
+            error = 1;
         }
     }
 }
 
 void askForLongString(LongString str, char* message) {
-    int error;
-    fgets(str, 1000, stdin);
-    str[strlen(str)-1] = '\0';
+    int error = 1;
 
     while (error) {
+        error = 0;
         printf("%s", message);
-        fgets(str, 100, stdin);
+        fgets(str, 1000, stdin);
         str[strlen(str)-1] = '\0';
         error = checkHashtag(str);
         if (error) {
-            printf("the string contains '#'.\n");
+            printf("(ERROR) The text cannot contain '#'.\n");
+        }
+        if (str[0] == '\0') {
+            error = 1;
+            printf("(ERROR) Enter a valid text.\n");
         }
     }
 }

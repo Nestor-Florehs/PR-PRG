@@ -1,6 +1,3 @@
-//
-// Created by nesto on 27/10/2024.
-//
 #include "user.h"
 #include <stddef.h>
 #include <stdlib.h>
@@ -232,11 +229,9 @@ int logIn(DataUsers data){
             found=1;
             index=i;
             if(data.user[i].rol=='A'){
-                printf("Enter your PIN: ");
                 String pin;
-                fgets(pin,50,stdin);
-                deleteLinespace(pin);
-                if(strcmp(data.user[i].pin,pin) == 0){
+                askForString(pin, "Enter your PIN: ");
+                if(strcmp(data.user[i].pin, pin) == 0){
                     found=1;
                 }else{
                     found=0;
@@ -246,9 +241,9 @@ int logIn(DataUsers data){
         }
     }
     if(found==1){
-        printf("\nLog In successful\n");
+        printf("You have been successfully logged!\n");
     }else{
-        printf("\n(ERROR) wrong email or password\n");
+        printf("\n(ERROR) One of your credentials is wrong\n");
     }
     return index;
 }

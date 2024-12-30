@@ -44,7 +44,7 @@ void showAdminMenu() {
     printf("\t4. Manage crew\n");
     printf("\t5. Manage project\n");
     printf("\t6. Create travel\n");
-    printf("\t7. Exit\n");
+    printf("\t7. Log out\n");
 }
 
 void showAdminSpaceshipMenu() {
@@ -230,7 +230,7 @@ void executeAdminMenu(int choice, DataUsers* d, DataSpaceship* ds, Crew_data* dc
                     dp = readProjectsData();
                     *d = executeAdminProjectsMenu(projectOption, *d, dp);
                 }else {
-                    printf("Please enter a valid option!");
+                    printf("Please enter a valid option!\n");
                 }
             }while(projectOption != 3);
             break;
@@ -238,6 +238,7 @@ void executeAdminMenu(int choice, DataUsers* d, DataSpaceship* ds, Crew_data* dc
             printf("Create Travel\n");
             break;
         case 7:
+            printf("Back to the previous screen.\n");
             break;
         default:
             printf("Invalid Choice\n");
@@ -253,7 +254,7 @@ void showInvestigatorMenu() {
     printf("\t4. Delete a project\n");
     printf("\t5. Post a project\n");
     printf("\t6. Review a project\n");
-    printf("\t7. Exit\n");
+    printf("\t7. Log out\n");
 }
 
 void executeInvestigatorMenu(int choice, DataUsers du, DataProjects dp, int indexUser) {
@@ -274,15 +275,18 @@ void executeInvestigatorMenu(int choice, DataUsers du, DataProjects dp, int inde
             saveProject(dp);
             break;
         case 5:
-            // dp = postProject(dp);
+            dp = postProject(dp);
             saveProject(dp);
+            break;
         case 6:
-            //dp = reviewProject(dp, indexUser, du);
+            dp = reviewProject(dp, indexUser, du);
             saveProject(dp);
             break;
         case 7:
-            exit(0);
+            printf("Back to the previous screen.\n");
+            break;
         default:
             printf("Invalid Choice\n");
     }
 }
+

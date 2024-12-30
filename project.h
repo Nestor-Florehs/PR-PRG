@@ -39,7 +39,7 @@ DataProjects updateProject(DataProjects dp, int idx_user, DataUsers du);
 
 DataProjects deleteProject(DataProjects dp, int idx_user, DataUsers du);
 
-DataProjects modifyOption(int option, DataProjects dp, int i);
+DataProjects postProject(DataProjects dp);
 
 DataProjects reviewProject(DataProjects dp, int idx_user, DataUsers du);
 

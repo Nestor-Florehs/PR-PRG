@@ -120,7 +120,8 @@ DataUsers readUsersData(){
     String num, aux;
     du.n_users = 0;
     du.user = NULL;
-    FILE *f = fopen("..\\textFiles\\RegisterUser.txt", "r");
+    FILE *f;
+    f = fopen("..\\textFiles\\RegisterUser.txt", "r");
     if(f == NULL){
         printf("Error opening file - User\n");
     }else{
@@ -197,7 +198,8 @@ DataSpaceship readSpaceshipsData(DataSpaceship* stock) {
     DataSpaceship ds;
     ds.n_spaceships = 0;
     ds.spaceship = NULL;
-    FILE *f = fopen("..\\textFiles\\Spaceships.txt", "r");
+    FILE* f;
+    f = fopen("..\\textFiles\\Spaceships.txt", "r");
     if(f == NULL){
         printf("Error opening file - Spaceships\n");
     }else{
@@ -375,60 +377,6 @@ void saveCrew(Crew_data dc) {
     }
 }
 
-void loadAndShowUsersFromTextFile() {
-    FILE* file = fopen("..\\textFiles\\users.txt", "r");
-    if (file == NULL) {
-        printf("(ERROR) Could not open file %s for reading.\n", "C:\\Documentos\\ingenieria informatica\\Segundo_carrera\\Pr Proj\\Proyecto\\prprI2425-A-g1\\users.txt");
-        return;
-    }
-
-    char line[256]; // Buffer para leer líneas del archivo
-
-    // Leer y descartar la primera línea si tiene encabezado
-    if (fgets(line, sizeof(line), file)) {
-        // Comprueba si la línea es un encabezado; puede ser opcional según el formato del archivo
-        if (strstr(line, "ID,Name,Email,Password,Pin,Rol") != NULL) {
-            printf("Leyendo archivo con encabezado: %s\n", line);
-        } else {
-            rewind(file); // No es un encabezado, volvemos al inicio
-        }
-    }
-
-    // Leer cada línea y procesarla
-    printf("\nUsuarios cargados desde %s:\n", "..\\textFiles\\users.txt");
-    while (fgets(line, sizeof(line), file)) {
-        User user;
-        // Dividir la línea en tokens basados en comas
-        char* token = strtok(line, ",");
-        if (token != NULL) user.id = atoi(token);
-
-        token = strtok(NULL, ",");
-        if (token != NULL) strncpy(user.name, token, sizeof(user.name));
-
-        token = strtok(NULL, ",");
-        if (token != NULL) strncpy(user.email, token, sizeof(user.email));
-
-        token = strtok(NULL, ",");
-        if (token != NULL) strncpy(user.password, token, sizeof(user.password));
-
-        token = strtok(NULL, ",");
-        if (token != NULL) strncpy(user.pin, token, sizeof(user.pin));
-
-        token = strtok(NULL, ",");
-        if (token != NULL) user.rol = token[0]; // Primer carácter como rol
-
-        // Imprimir los datos del usuario
-        printf("ID: %d\n", user.id);
-        printf("Name: %s\n", user.name);
-        printf("Email: %s\n", user.email);
-        printf("Password: %s\n", user.password);
-        printf("Pin: %s\n", user.pin);
-        printf("Rol: %c\n", user.rol);
-        printf("------------------------\n");
-    }
-
-    fclose(file);
-}
 
 void saveProject(DataProjects dp){
     int i, j;
@@ -477,72 +425,4 @@ void saveUsers(DataUsers du){
         }
         fclose(f);
     }
-}
-
-
-DataUsers loadUsersFromFile() {
-    DataUsers d;
-    d.n_users = 0;
-    d.user = NULL;
-
-    FILE* file = fopen("..\\textFiles\\users.txt", "r"); // Modo texto para lectura
-    if (file == NULL) {
-        printf("(ERROR) Could not open file %s for reading.\n", "C:\\Documentos\\ingenieria informatica\\Segundo_carrera\\Pr Proj\\Proyecto\\prprI2425-A-g1\\users.txt");
-        return d;
-    }
-
-    char line[256]; // Buffer para leer líneas
-
-    // Leer y descartar la primera línea si tiene encabezado
-    if (fgets(line, sizeof(line), file)) {
-        if (strstr(line, "ID,Name,Email,Password,Pin,Rol") != NULL) {
-            // Es un encabezado válido, continuar
-        } else {
-            rewind(file); // No es un encabezado, volver al inicio
-        }
-    }
-
-    // Leer cada línea y convertir a un objeto `User`
-    while (fgets(line, sizeof(line), file)) {
-        User user;
-        char* token = strtok(line, ",");
-        if (token != NULL) user.id = atoi(token);
-
-        token = strtok(NULL, ",");
-        if (token != NULL) strncpy(user.name, token, sizeof(user.name) - 1);
-
-        token = strtok(NULL, ",");
-        if (token != NULL) strncpy(user.email, token, sizeof(user.email) - 1);
-
-        token = strtok(NULL, ",");
-        if (token != NULL) strncpy(user.password, token, sizeof(user.password) - 1);
-
-        token = strtok(NULL, ",");
-        if (token != NULL) strncpy(user.pin, token, sizeof(user.pin) - 1);
-        else strcpy(user.pin, "N/A"); // Manejar campos vacíos para PIN
-
-        token = strtok(NULL, ",");
-        if (token != NULL) user.rol = token[0];
-
-        // Eliminar caracteres de nueva línea residuales
-        user.name[strcspn(user.name, "\n")] = '\0';
-        user.email[strcspn(user.email, "\n")] = '\0';
-        user.password[strcspn(user.password, "\n")] = '\0';
-        user.pin[strcspn(user.pin, "\n")] = '\0';
-
-        // Agregar el usuario al array dinámico
-        d.user = realloc(d.user, (d.n_users + 1) * sizeof(User));
-        if (d.user == NULL) {
-            printf("(ERROR) Memory allocation failed.\n");
-            fclose(file);
-            d.n_users = 0;
-            return d;
-        }
-
-        d.user[d.n_users] = user;
-        d.n_users++;
-    }
-
-    fclose(file);
-    return d;
 }

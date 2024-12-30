@@ -12,6 +12,10 @@ void showAdminMenu();
 
 void showInvestigatorMenu();
 
+void showManageClientMenu();
+
+DataUsers runManageClient(DataUsers data_users);
+
 void executeInvestigatorMenu(int choice, DataUsers d, DataProjects dp, int userIndex);
 
 #endif

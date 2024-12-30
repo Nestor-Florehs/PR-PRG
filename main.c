@@ -14,7 +14,6 @@ void showMainMenu() {
     printf("\n\t1. Log in\n");
     printf("\t2. Register\n");
     printf("\t3. Exit\n");
-    printf("Choose: ");
 }
 
 
@@ -31,7 +30,7 @@ void executeMainMenu(int option, DataUsers* dataUsers, DataSpaceship* ds, Crew_d
         case 1:
             userIndex = logIn(*dataUsers);
             User user = dataUsers->user[userIndex];
-            printf("%s\n", user.email);
+            //printf("%s\n", user.email);
             //DONE ADMIN
             if (user.rol == 'A') {
                 do {
@@ -42,7 +41,7 @@ void executeMainMenu(int option, DataUsers* dataUsers, DataSpaceship* ds, Crew_d
                     if(projectOption != -1) {
                         executeAdminMenu(projectOption, dataUsers, ds, dc, stock, user.email);
                     }else {
-                        printf("Please enter a valid option!");
+                        printf("(ERROR) Enter a valid option.\n");
                     }
                 }while(projectOption != 7);
             }
@@ -58,30 +57,41 @@ void executeMainMenu(int option, DataUsers* dataUsers, DataSpaceship* ds, Crew_d
                     if(projectOption != -1) {
                         executeInvestigatorMenu(projectOption, *dataUsers, dp, userIndex);
                     }else {
-                        printf("Please enter a valid option!");
+                        printf("(ERROR) Enter a valid option.\n");
                     }
                 }while(projectOption != 7);
             }
 
-            //TODO CLIENT
-
+            if(user.rol == 'C') {
+                String optionUser;
+                do {
+                    showManageClientMenu();
+                    askForString(optionUser, "Choose an option: ");
+                    projectOption = checkInt(optionUser);
+                    if(projectOption != -1) {
+                        runManageClient(*dataUsers);
+                    }else {
+                        printf("(ERROR) Enter a valid option.\n");
+                    }
+                }while(projectOption != 8);
+            }
             break;
         case 2:
             registerUser(*dataUsers);
             break;
         case 3:
-            printf("Exiting\n");
+            printf("See you soon!\n");
             //FIXME put saveUser();
             break;
         default:
-            printf("Invalid option\n");
+            printf("(ERROR) Enter a valid option.\n");
             break;
     }
 }
 
 int main() {
     int option = 0;
-    char aux;
+    String aux;
     DataUsers dataUsers = readUsersData();
     DataSpaceship dataSpaceship;
     dataSpaceship.n_spaceships = 0;
@@ -96,13 +106,13 @@ int main() {
     dataCrew.crew = NULL;
     dataCrew = readCrewData();
 
-    // stock = readSpaceship(stock);
+    //stock = readSpaceship(stock);
     dataSpaceship = readSpaceshipsData(&stock);
 
     do {
         showMainMenu();
-        scanf("%d", &option);
-        scanf("%c", &aux);
+        askForString(aux, "Choose an option: ");
+        option = checkInt(aux);
         executeMainMenu(option, &dataUsers, &dataSpaceship, &dataCrew, stock);
     }while(option != 3);
 

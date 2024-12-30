@@ -29,17 +29,17 @@ DataProjects createProject(DataProjects dp, DataUsers du, int user_idx){
     newProject.n_members = 0;
     newProject.accepted = 0;
     newProject.posted = 0;
-    strcpy(newProject.status, "-");
+    strcpy(newProject.status, "PENDING APPROVAL");
     strcpy(newProject.responsible, du.user[user_idx].email);
     askForString(newProject.title, "Enter the title: ");
     askForLongString(newProject.description, "Enter the description: ");
     askForString(cost, "Enter the cost: ");
     newProject.cost = checkDecimal(cost);
 
-    if(newProject.cost != -1){
+    if(newProject.cost >= 0){
         askForString(budget, "Enter the budget: ");
         newProject.budget = checkDecimal(budget);
-        if(newProject.budget != -1) {
+        if(newProject.budget >= 0) {
             askForString(newProject.goal, "Enter the goal: ");
 
             askForString(design, "Enter your design: [T]rip or [S]hip: ");
@@ -119,6 +119,9 @@ void showProjectDetails(DataProjects dp){
                 for(j = 0; j < dp.project[i].n_members; j++){
                     printf("\t-%s \n", dp.project[i].team_members[j]);
                 }
+                if (dp.project[i].n_members == 0) {
+                    printf("\t-No members in project.\n");
+                }
                 switch (dp.project[i].accepted) {
                     case -1:
                         printf("  This project has been denied\n");
@@ -134,7 +137,7 @@ void showProjectDetails(DataProjects dp){
             }
         }
         if(!found){
-            printf("This ID project does not exist\n");
+            printf("(ERROR) This ID project does not exist\n");
         }
     }else{
         printf("(ERROR) Enter a valid number\n");
@@ -152,18 +155,19 @@ DataProjects validateProject(DataProjects dp){
             if(dp.project[i].id == id){
                 found = 1;
                 if(dp.project[i].accepted == 0) {
-                    printf("%s\n", dp.project[i].title);
+                    printf("%s led by %s\n", dp.project[i].title, dp.project[i].responsible);
                     askForString(validation, "Enter 'Y' for accept or 'N' for deny: ");
                     if (toupper(validation[0]) == 'Y' && validation[1] == '\0') {
-                        printf("The project has been approved\n");
+                        printf("The project #%d has been approved.\n", dp.project[i].id);
                         strcpy(dp.project[i].status, "TO DO");
                         dp.project[i].accepted = 1;
                     } else {
                         if (toupper(validation[0]) == 'N' && validation[1] == '\0') {
-                            printf("The project has been denied\n");
+                            printf("The project #%d has been denied.\n", dp.project[i].id);
                             dp.project[i].accepted = -1;
+                            strcpy(dp.project[i].status, "DENIED");
                         } else {
-                            printf("(ERROR) Enter a valid option\n");
+                            printf("(ERROR) Enter a valid option.\n");
                         }
                     }
                 }else{
@@ -172,7 +176,7 @@ DataProjects validateProject(DataProjects dp){
             }
         }
         if(!found){
-            printf("This ID project does not exist\n");
+            printf("(ERROR) This ID project does not exist\n");
         }
     }else{
         printf("(ERROR) Enter a valid number\n");
@@ -212,8 +216,8 @@ DataProjects updateProject(DataProjects dp, int idx_user, DataUsers du){
                         if (strcmp(dp.project[i].status, "DONE")) {
                             srand(time(NULL));
                             num = rand() % (100 + 1);
-                            printf("To update the project you need 50 points\n");
-                            printf("\tYour project has obtained %d points\n", num);
+                            printf("\tTo update the project you need to get at least 50 points.\n");
+                            printf("\tYour project has obtained %d points.\n", num);
                             if (num >= 50) {
                                 if (!strcmp(dp.project[i].status, "TO DO")) {
                                     strcpy(dp.project[i].status, "IN PROGRESS");
@@ -226,23 +230,23 @@ DataProjects updateProject(DataProjects dp, int idx_user, DataUsers du){
                                         }
                                     }
                                 }
-                                printf("Your project has been updated to '%s'\n", dp.project[i].status);
+                                printf("Your project has been updated to '%s'.\n", dp.project[i].status);
                             } else {
-                                printf("Your project has not been updated\n");
+                                printf("Your project has not been updated.\n");
                             }
                         } else {
-                            printf("Your project is already fully updated\n");
+                            printf("Your project is already fully updated.\n");
                         }
                     }else{
-                        printf("Your project must be accepted for updates\n");
+                        printf("Your project must be accepted for getting updates.\n");
                     }
                 }else{
-                    printf("You're not the responsible of this project\n");
+                    printf("(ERROR) You are not the responsible of this project.\n");
                 }
             }
         }
         if(!found){
-            printf("This project ID does not exist\n");
+            printf("(ERROR) This project ID does not exist\n");
         }
     }else{
         printf("(ERROR) Enter a valid number\n");
@@ -291,18 +295,18 @@ DataProjects deleteProject(DataProjects dp, int idx_user, DataUsers du){
                     if(dp.project[i].accepted == -1) {
                         error = removeProject(&dp, i);
                         if(!error){
-                            printf("Your project has been deleted\n");
+                            printf("Your project has been deleted.\n");
                         }
                     }else{
-                        printf("Your project must be denied for deleting\n");
+                        printf("Your project must be denied for deleting.\n");
                     }
                 }else{
-                    printf("You're not the responsible of this project\n");
+                    printf("(ERROR) You're not the responsible of this project\n");
                 }
             }
         }
         if(!found){
-            printf("This project ID does not exist\n");
+            printf("(ERROR) This project ID does not exist\n");
         }
     }else{
         printf("(ERROR) Enter a valid number\n");
@@ -310,9 +314,9 @@ DataProjects deleteProject(DataProjects dp, int idx_user, DataUsers du){
     return dp;
 }
 
-int checkDone(String responsible){
+int checkDone(String status){
     int check = 0;
-    if(!strcmp(responsible, "DONE")){
+    if(strcmp(status, "DONE") == 0){
         check = 1;
     }
     return check;
@@ -321,9 +325,9 @@ int checkDone(String responsible){
 void savePostedProject(DataProjects dp){
     int i, j;
     FILE*f;
-    f = fopen("C:\\Users\\ggpp8\\OneDrive\\Escritorio\\La Salle Enginyeria\\2n curs\\ProjectesDeProg\\Prog_I\\P1\\prueba\\textFiles\\PostedProjects.txt", "w");
+    f = fopen("..\\textFiles\\PostedProjects.txt", "w");
     if(f == NULL){
-        printf("error opening file");
+        printf("Error opening file posted projects (W)");
     }else{
         for(i = 0; i < dp.n_projects; i++){
             if(dp.project[i].posted == 1) {
@@ -357,7 +361,7 @@ DataProjects postProject(DataProjects dp){
 
     if(id != -1) {
         for (i = 0; i < dp.n_projects && !found; i++) {
-            if (checkID(dp.project[i].id, id)) {
+            if (dp.project[i].id == id) {
                 found = 1;
                 if(dp.project[i].accepted == 1) {
                     if (checkDone(dp.project[i].status)) {
@@ -365,17 +369,15 @@ DataProjects postProject(DataProjects dp){
                         savePostedProject(dp);
                         printf("Your project has been posted on a file\n");
                     } else {
-                        printf("Your project hasn't finished\n");
+                        printf("Your project must reach the DONE Status for being posted A\n");
                     }
                 }else{
-                    printf("Your project must be accepted for updates\n");
+                    printf("Your project must reach the DONE Status for being posted\n");
                 }
-            }else{
-                printf("You're not the responsible of this project\n");
             }
         }
         if(!found){
-            printf("This project ID does not exist\n");
+            printf("(ERROR) This project ID does not exist\n");
         }
     }else{
         printf("(ERROR) Enter a valid number\n");
@@ -396,6 +398,7 @@ DataProjects modifyOption(int option, DataProjects dp, int i){
     String newTitle, newGoal, budgetChar, costChar;
     LongString newDescription;
     float newBudget, newCost;
+    int error = 0;
 
     switch(option){
         case 1:
@@ -408,13 +411,23 @@ DataProjects modifyOption(int option, DataProjects dp, int i){
             break;
         case 3:
             askForString(costChar, "Enter a new cost: ");
-            newCost = checkInt(costChar);
-            dp.project[i].cost = newCost;
+            newCost = checkDecimal(costChar);
+            if (newCost >= 0) {
+                dp.project[i].cost = newCost;
+            }else {
+                error = 1;
+                printf("(ERROR) Enter a valid number.\n");
+            }
             break;
         case 4:
             askForString(budgetChar, "Enter a new budget: ");
-            newBudget = checkInt(budgetChar);
-            dp.project[i].budget = newBudget;
+            newBudget = checkDecimal(budgetChar);
+            if (newBudget >= 0) {
+                dp.project[i].budget = newBudget;
+            }else {
+                error = 1;
+                printf("(ERROR) Enter a valid number.\n");
+            }
             break;
         case 5:
             askForString(newGoal, "Enter a new goal: ");
@@ -422,6 +435,9 @@ DataProjects modifyOption(int option, DataProjects dp, int i){
             break;
         default:
             printf("Please enter a valid option\n");
+    }
+    if (!error) {
+        printf("The selected data has been updated.");
     }
     return dp;
 }
@@ -450,15 +466,15 @@ DataProjects reviewProject(DataProjects dp, int idx_user, DataUsers du){
                             printf("(ERROR) Enter a valid number\n");
                         }
                     }else{
-                        printf("Your project must be accepted for updates\n");
+                        printf("Your project must be posted for doing a review.\n");
                     }
                 }else{
-                    printf("You're not the responsible of this project\n");
+                    printf("(ERROR) You're not the responsible of this project\n");
                 }
             }
         }
         if(!found){
-            printf("This project ID does not exist\n");
+            printf("(ERROR) This project ID does not exist\n");
         }
     }else{
         printf("(ERROR) Enter a valid number\n");
